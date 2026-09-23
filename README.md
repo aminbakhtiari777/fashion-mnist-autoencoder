@@ -1,38 +1,129 @@
-# Fashion MNIST Autoencoder
+# Fashion Vision Lab
 
-## Project Overview
+[![CI](https://github.com/aminbakhtiari777/fashion-mnist-autoencoder/actions/workflows/ci.yml/badge.svg)](https://github.com/aminbakhtiari777/fashion-mnist-autoencoder/actions/workflows/ci.yml)
+[![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![TensorFlow](https://img.shields.io/badge/TensorFlow-optional_training-FF6F00?logo=tensorflow&logoColor=white)](https://www.tensorflow.org/)
+[![Domain](https://img.shields.io/badge/domain-fashion_AI-C71585)](#experiments)
 
-This project implements a simple Autoencoder using the Fashion MNIST dataset.
+A compact computer-vision research portfolio connecting fashion-domain experience with four neural-network tasks: classification, representation learning, reconstruction, and generative modeling.
 
-The goal is to learn how neural networks can compress image data into a smaller latent representation and then reconstruct the original image.
+This repository consolidates earlier Fashion-MNIST exercises into one structured lab. Historical notebooks are preserved as reproducible evidence, while reusable model builders, cross-task evaluation, tests, CI, and model documentation provide an engineering layer around them.
 
-## Dataset
+## Experiments
 
-Fashion MNIST Dataset
+| Track | Question | Model | Primary evaluation |
+| --- | --- | --- | --- |
+| Classification | Which garment category is shown? | CNN | Accuracy, macro F1, per-class recall |
+| Autoencoder | Can an image be compressed and reconstructed? | Dense bottleneck | MSE, MAE, PSNR |
+| GAN | Can a network generate plausible garment pixels? | Dense GAN | Diversity and pixel-distribution checks |
+| DCGAN | Does convolution improve spatial generation? | Convolutional GAN | Diversity plus qualitative sample grid |
 
-The dataset contains grayscale clothing images with size 28x28 pixels.
+## Architecture
 
-- Training images: 60,000
-- Testing images: 10,000
-- Image size: 28x28
-- Flattened input size: 784
+```mermaid
+flowchart TD
+    D[Fashion-MNIST] --> C[Classifier]
+    D --> A[Autoencoder]
+    D --> G[GAN and DCGAN]
+    C --> E[Shared evaluation]
+    A --> E
+    G --> E
+    E --> R[Comparable experiment report]
+```
 
-## What is an Autoencoder?
+## Reproduced notebook results
 
-An Autoencoder is a neural network that learns to reconstruct its input.
+| Experiment | Recorded result |
+| --- | ---: |
+| Dense classifier test accuracy | 87.32% |
+| CNN classifier test accuracy | 90.21% |
+| Autoencoder final validation MSE | 0.0145 |
+| Dense GAN training | 3,000 iterations completed |
 
-The model receives an image as input and tries to output the same image.
+These are the outputs stored in the original notebooks. Generative quality is not claimed from loss alone; the production utilities therefore report sample diversity and distribution statistics separately.
 
-The network has two main parts:
-
-- Encoder
-- Decoder
-
-## Encoder
-
-The Encoder compresses the original image into a smaller representation.
-
-Architecture:
+## Repository structure
 
 ```text
-784 → 128 → 64 → 32
+.
+├── notebooks/
+│   ├── classification.ipynb
+│   ├── autoencoder.ipynb
+│   └── gan.ipynb
+├── src/fashion_vision/
+│   ├── evaluation.py
+│   ├── experiments.py
+│   └── models.py
+├── scripts/evaluate_outputs.py
+├── tests/
+├── docs/MODEL_CARD.md
+└── requirements-train.txt
+```
+
+## Install
+
+For evaluation and tests:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-dev.txt
+python -m unittest discover -s tests -v
+```
+
+For neural-network training:
+
+```bash
+pip install -r requirements-train.txt
+```
+
+TensorFlow is intentionally optional so the evaluation and CI layers remain lightweight.
+
+## Evaluate exported arrays
+
+Classification:
+
+```bash
+python scripts/evaluate_outputs.py classification \
+  --input predictions.npz
+```
+
+The NPZ file must contain `labels` and `probabilities`.
+
+Reconstruction:
+
+```bash
+python scripts/evaluate_outputs.py reconstruction \
+  --input reconstructions.npz
+```
+
+The NPZ file must contain `original` and `reconstructed`.
+
+Generation:
+
+```bash
+python scripts/evaluate_outputs.py generation \
+  --input generated.npz
+```
+
+The NPZ file must contain `images`.
+
+## What this project demonstrates
+
+- Organizing multiple research experiments around a shared dataset
+- Separating model construction from evaluation
+- Comparing supervised, representation-learning, and generative objectives
+- Treating GAN loss as insufficient evidence of image quality
+- Preserving reproducible learning artifacts while improving engineering quality
+- Applying AI skills to a domain where the author has practical fashion experience
+
+## Limitations
+
+- Fashion-MNIST is a small grayscale benchmark, not real fashion photography.
+- Notebook benchmarks were produced in separate historical runs.
+- Diversity statistics can detect collapse symptoms but do not replace FID, KID, or human review.
+- Deployment is intentionally out of scope; this is a research and evaluation portfolio.
+
+## Author
+
+**Amin Bakhtiari** — AI/ML engineer in training with professional fashion-industry experience.
